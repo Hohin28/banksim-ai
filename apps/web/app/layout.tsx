@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { SiteFooter } from "@/components/site/footer";
+import { SiteNav } from "@/components/site/nav";
 import { ThemeProvider } from "@/lib/theme";
 import "./globals.css";
 
@@ -46,7 +48,11 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col bg-page text-ink-1 font-sans">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <SiteNav />
+          {children}
+          <SiteFooter />
+        </ThemeProvider>
       </body>
     </html>
   );

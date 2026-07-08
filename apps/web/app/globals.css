@@ -41,6 +41,16 @@
 
   --shadow-raised: 0 4px 16px rgba(11, 21, 18, 0.08);
   --shadow-floating: 0 12px 40px rgba(11, 21, 18, 0.16);
+
+  /* Chart series — validated categorical slots (docs/10 §6).
+     Color follows the entity: deposits=1, interest/growth=2,
+     scenario B=5, inflation/real-value=6. */
+  --series-1: #2a78d6;
+  --series-2: #1baf7a;
+  --series-5: #4a3aa7;
+  --series-6: #e34948;
+  --chart-grid: #e1e0d9;
+  --chart-baseline: #c3c2b7;
 }
 
 .dark {
@@ -68,6 +78,14 @@
 
   --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.3);
   --shadow-floating: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+  /* Dark chart series: own validated steps, not a flip (docs/10 §6). */
+  --series-1: #3987e5;
+  --series-2: #199e70;
+  --series-5: #9085e9;
+  --series-6: #e66767;
+  --chart-grid: #2c2c2a;
+  --chart-baseline: #383835;
 }
 
 /* Map tokens to Tailwind utilities (bg-page, text-ink-2, border-line, …) */
