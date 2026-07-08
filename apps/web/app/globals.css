@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+/* Dark mode is driven by a class set before hydration (see app/layout.tsx),
+   so `dark:` utilities and token swaps follow the user's stored choice. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────
+   Mint & Ink design tokens — docs/10-design-system.md §1
+   Dark values are designed, not inverted.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  --bg-page: #f7f8f6;
+  --bg-surface: #ffffff;
+  --bg-raised: #ffffff;
+  --surface-chart: #fcfcfb; /* validator-locked, do not restyle casually */
+
+  --brand: #0e9f6e;
+  --brand-strong: #046c4e;
+  --accent-gold: #b7791f;
+  --danger: #c81e1e;
+
+  --ink-1: #0b1512;
+  --ink-2: #4b5563;
+  --ink-3: #8a938e;
+  --line: #e4e7e3;
+  --focus-ring: #0e9f6e;
+
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  --grad-hero: linear-gradient(135deg, #0e9f6e 0%, #0891b2 100%);
+  --grad-gold: linear-gradient(135deg, #f6c453 0%, #ed8936 100%);
+
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-shadow: 0 8px 32px rgba(11, 21, 18, 0.1);
+
+  --shadow-raised: 0 4px 16px rgba(11, 21, 18, 0.08);
+  --shadow-floating: 0 12px 40px rgba(11, 21, 18, 0.16);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg-page: #0c1210;
+  --bg-surface: #131b18;
+  --bg-raised: #1a2420;
+  --surface-chart: #1a1a19;
+
+  --brand: #10b981;
+  --brand-strong: #34d399;
+  --accent-gold: #f6c453;
+  --danger: #f87171;
+
+  --ink-1: #f4f6f4;
+  --ink-2: #a8b3ae;
+  --ink-3: #6e7a74;
+  --line: #243029;
+  --focus-ring: #34d399;
+
+  --glass-bg: rgba(19, 27, 24, 0.66);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-floating: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Map tokens to Tailwind utilities (bg-page, text-ink-2, border-line, …) */
+@theme inline {
+  --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-raised: var(--bg-raised);
+  --color-chart: var(--surface-chart);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-gold: var(--accent-gold);
+  --color-danger: var(--danger);
+  --color-ink-1: var(--ink-1);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-focus: var(--focus-ring);
+  --color-status-good: var(--status-good);
+  --color-status-warning: var(--status-warning);
+  --color-status-serious: var(--status-serious);
+  --color-status-critical: var(--status-critical);
+
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-display: var(--font-space), var(--font-instrument), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* docs/10 §3 — three radii only */
+  --radius-field: 8px;
+  --radius-card: 12px;
+  --radius-panel: 20px;
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+body {
+  background: var(--bg-page);
+  color: var(--ink-1);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Focus is always visible — never removed without replacement (docs/10 §7) */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 25%, transparent);
+}
+
+/* ── Glass recipe (one recipe, reused — docs/10 §1) ───────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-panel);
+}
+
+/* ── Slider (hero control — docs/10 §4) ───────────────────── */
+.bs-range {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 44px; /* full-height hit area ≥44px */
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+}
+.bs-range:focus-visible {
+  outline: none; /* ring drawn on the thumb instead, below */
+}
+/* WebKit */
+.bs-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--brand) var(--fill, 50%),
+    var(--line) var(--fill, 50%)
+  );
+}
+.bs-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: var(--brand);
+  border: 3px solid var(--bg-surface);
+  box-shadow: var(--shadow-raised);
+  margin-top: -11px; /* (6 - 28) / 2 */
+  transition: transform 120ms ease;
+}
+.bs-range:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.bs-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+/* Firefox */
+.bs-range::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--line);
+}
+.bs-range::-moz-range-progress {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--brand);
+}
+.bs-range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: var(--brand);
+  border: 3px solid var(--bg-surface);
+  box-shadow: var(--shadow-raised);
+}
+.bs-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Native <dialog> chrome (Modal/Drawer) ─────────────────── */
+dialog {
+  color: inherit;
+}
+dialog::backdrop {
+  background: rgba(11, 21, 18, 0.45);
+  backdrop-filter: blur(2px);
+}
+.dark dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+dialog {
+  opacity: 0;
+  transition:
+    opacity 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    overlay 240ms allow-discrete,
+    display 240ms allow-discrete;
+}
+.bs-modal {
+  transform: translateY(8px) scale(0.98);
+}
+.bs-drawer-right {
+  transform: translateX(24px);
+}
+.bs-drawer-bottom {
+  transform: translateY(24px);
+}
+@starting-style {
+  dialog[open].bs-modal {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  dialog[open].bs-drawer-right {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  dialog[open].bs-drawer-bottom {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog,
+  .bs-range::-webkit-slider-thumb {
+    transition: none;
+  }
+}

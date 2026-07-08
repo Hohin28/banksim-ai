@@ -98,7 +98,7 @@ banksim-ai/
 │  ├─ docker-compose.yml          # local: postgres + redis + api + web
 │  └─ railway/ render/            # service config as code (whichever host wins at M8)
 │
-├─ package.json  pnpm-workspace.yaml  turbo.json   # JS workspace + task runner
+├─ package.json  pnpm-workspace.yaml               # JS workspace (pnpm -r runs tasks; no extra runner needed at this scale)
 └─ .env.example                   # every env var documented, no secrets
 ```
 
