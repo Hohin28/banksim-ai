@@ -7,10 +7,12 @@ import { usePathname } from "next/navigation";
 
 const LINKS: { href: string; label: string; soon?: boolean }[] = [
   { href: "/savings", label: "Savings" },
-  { href: "/compound-interest", label: "Compound" },
   { href: "/loans", label: "Loans" },
+  { href: "/credit-score", label: "Credit" },
+  { href: "/bank-game", label: "Bank Game" },
   { href: "/investments", label: "Investments" },
   { href: "/goals", label: "Goals" },
+  { href: "/compound-interest", label: "Compound" },
   { href: "/inflation", label: "Inflation" },
   { href: "/learn", label: "Learn", soon: true },
 ];

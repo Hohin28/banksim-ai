@@ -1,12 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Type-checking and linting are enforced as their own CI gates
-  // (`pnpm -r typecheck` and `pnpm -r lint`, see docs/12-testing-strategy.md).
-  // Next's build re-runs both, which on some machines takes tens of minutes
-  // of redundant work — skip them here so `build` only bundles.
+  // Type-checking is enforced as its own CI gate (`pnpm -r typecheck`, see
+  // docs/12-testing-strategy.md). Next's build re-runs it, which on some
+  // machines takes tens of minutes of redundant work — skip it here so
+  // `build` only bundles. (Next 16 no longer runs ESLint on build.)
   typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;

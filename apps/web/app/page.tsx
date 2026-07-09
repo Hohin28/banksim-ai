@@ -43,8 +43,18 @@ const EXPLORE: {
     desc: "Turn 'a laptop someday' into ₹/month.",
     href: "/goals",
   },
-  { emoji: "📊", title: "Credit score", desc: "Miss an EMI, watch the damage — safely." },
-  { emoji: "🎮", title: "Run a bank", desc: "Approve loans, balance profit against risk." },
+  {
+    emoji: "📊",
+    title: "Credit score",
+    desc: "Miss an EMI, watch the damage — safely.",
+    href: "/credit-score",
+  },
+  {
+    emoji: "🎮",
+    title: "Run a bank",
+    desc: "Approve loans, balance profit against risk.",
+    href: "/bank-game",
+  },
 ];
 
 export default function Home() {
