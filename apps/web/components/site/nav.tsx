@@ -14,7 +14,7 @@ const LINKS: { href: string; label: string; soon?: boolean }[] = [
   { href: "/goals", label: "Goals" },
   { href: "/compound-interest", label: "Compound" },
   { href: "/inflation", label: "Inflation" },
-  { href: "/learn", label: "Learn", soon: true },
+  { href: "/learn", label: "Learn" },
 ];
 
 export function SiteNav() {

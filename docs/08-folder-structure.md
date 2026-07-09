@@ -57,7 +57,11 @@ banksim-ai/
 │  │  │  │                        # DonutSplit, ChartTableTab (a11y twin)…
 │  │  │  ├─ tutor/                # TutorFab, TutorDrawer, StreamedMessage…
 │  │  │  └─ lessons/              # MDX component set incl. <MiniSim/>
-│  │  ├─ content/lessons/         # *.mdx + quiz *.yaml (answer keys mirrored to API)
+│  │  ├─ content/lessons/         # typed lesson data (index.tsx) — blocks + quizzes
+│  │  │                           #   (chosen over MDX to stay type-safe and dodge
+│  │  │                           #    Turbopack MDX friction; MDX can slot in later
+│  │  │                           #    behind the same renderer contract. Quiz scoring
+│  │  │                           #    is client-side in M5; server re-scoring lands w/ M3)
 │  │  ├─ lib/                     # api client, auth helpers, url-state serializer,
 │  │  │                           # formatMoney, feature flags, analytics
 │  │  ├─ styles/                  # tailwind config lives at root of app; token css
