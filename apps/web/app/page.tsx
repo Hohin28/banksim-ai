@@ -25,11 +25,26 @@ const EXPLORE: {
     desc: "What today's ₹1,000 really buys in 10, 20, 30 years.",
     href: "/inflation",
   },
-  { emoji: "🏦", title: "Loans & EMI", desc: "Why you repay ₹7.7L on a ₹5L loan." },
+  {
+    emoji: "🏦",
+    title: "Loans & EMI",
+    desc: "Why you repay ₹7.7L on a ₹5L loan.",
+    href: "/loans",
+  },
+  {
+    emoji: "⚖️",
+    title: "Investments",
+    desc: "FD vs gold vs index funds, honestly compared.",
+    href: "/investments",
+  },
+  {
+    emoji: "🎯",
+    title: "Goals",
+    desc: "Turn 'a laptop someday' into ₹/month.",
+    href: "/goals",
+  },
   { emoji: "📊", title: "Credit score", desc: "Miss an EMI, watch the damage — safely." },
   { emoji: "🎮", title: "Run a bank", desc: "Approve loans, balance profit against risk." },
-  { emoji: "⚖️", title: "Investments", desc: "FD vs gold vs index funds, honestly compared." },
-  { emoji: "🎯", title: "Goals", desc: "Turn 'a laptop someday' into ₹/month." },
 ];
 
 export default function Home() {

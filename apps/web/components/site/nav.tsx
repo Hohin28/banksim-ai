@@ -8,8 +8,10 @@ import { usePathname } from "next/navigation";
 const LINKS: { href: string; label: string; soon?: boolean }[] = [
   { href: "/savings", label: "Savings" },
   { href: "/compound-interest", label: "Compound" },
+  { href: "/loans", label: "Loans" },
+  { href: "/investments", label: "Investments" },
+  { href: "/goals", label: "Goals" },
   { href: "/inflation", label: "Inflation" },
-  { href: "/loans", label: "Loans", soon: true },
   { href: "/learn", label: "Learn", soon: true },
 ];
 
