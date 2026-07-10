@@ -14,6 +14,7 @@ const LINKS: { href: string; label: string; soon?: boolean }[] = [
   { href: "/goals", label: "Goals" },
   { href: "/compound-interest", label: "Compound" },
   { href: "/inflation", label: "Inflation" },
+  { href: "/ml-demo", label: "ML Lab" },
   { href: "/learn", label: "Learn" },
 ];
 

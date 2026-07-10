@@ -1,0 +1,88 @@
+{
+  "version": "german-2026.07",
+  "dataset": {
+    "name": "UCI Statlog German Credit",
+    "url": "https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data",
+    "rows": 1000,
+    "year": 1994,
+    "note": "1,000 loan applications from a German bank; amounts are in 1990s Deutsche Mark. Protected/proxy attributes present in the raw data (personal status & sex, age, foreign worker) are deliberately excluded from training."
+  },
+  "features": {
+    "categorical": {
+      "checking": [
+        "A11",
+        "A12",
+        "A13",
+        "A14"
+      ],
+      "credit_history": [
+        "A30",
+        "A31",
+        "A32",
+        "A33",
+        "A34"
+      ],
+      "savings": [
+        "A61",
+        "A62",
+        "A63",
+        "A64",
+        "A65"
+      ],
+      "employment": [
+        "A71",
+        "A72",
+        "A73",
+        "A74",
+        "A75"
+      ],
+      "housing": [
+        "A151",
+        "A152",
+        "A153"
+      ]
+    },
+    "numeric": {
+      "duration_months": [
+        4,
+        72
+      ],
+      "amount": [
+        250,
+        20000
+      ],
+      "installment_rate": [
+        1,
+        4
+      ],
+      "existing_credits": [
+        1,
+        4
+      ]
+    }
+  },
+  "seed": 42,
+  "models": {
+    "logreg": {
+      "accuracy": 0.785,
+      "precision": 0.8299,
+      "recall": 0.8714,
+      "f1": 0.8502,
+      "roc_auc": 0.8164
+    },
+    "rf": {
+      "accuracy": 0.785,
+      "precision": 0.7975,
+      "recall": 0.9286,
+      "f1": 0.8581,
+      "roc_auc": 0.8124
+    },
+    "xgb": {
+      "accuracy": 0.76,
+      "precision": 0.8239,
+      "recall": 0.8357,
+      "f1": 0.8298,
+      "roc_auc": 0.7612
+    }
+  }
+}
