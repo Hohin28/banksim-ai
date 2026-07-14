@@ -19,18 +19,20 @@ import { SelectInput } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { StatCard } from "@/components/ui/stat-card";
 import { Tabs } from "@/components/ui/tabs";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { parseParams, useUrlSync, type ParamSpec } from "@/lib/url-state";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
 const SPECS = {
-  amount: { kind: "int", def: 500000, min: 10000, max: 10000000 },
+  // max = realistic typed cap; sliders drag a comfortable sub-range.
+  amount: { kind: "int", def: 500000, min: 10000, max: 100000000 },
   rate: { kind: "float", def: 9.5, min: 5, max: 24 },
   months: { kind: "int", def: 60, min: 6, max: 360 },
-  income: { kind: "int", def: 60000, min: 5000, max: 1000000 },
-  expenses: { kind: "int", def: 20000, min: 0, max: 1000000 },
-  existing: { kind: "int", def: 0, min: 0, max: 500000 },
+  income: { kind: "int", def: 60000, min: 5000, max: 10000000 },
+  expenses: { kind: "int", def: 20000, min: 0, max: 10000000 },
+  existing: { kind: "int", def: 0, min: 0, max: 5000000 },
   score: { kind: "int", def: 750, min: 300, max: 900 },
   emp: { kind: "enum", def: "salaried", options: ["salaried", "self-employed", "student"] },
 } satisfies Record<string, ParamSpec>;
@@ -95,12 +97,12 @@ function LoanSimulator() {
       announcement={`Monthly EMI ${formatMoney(emiR)}, ${result.risk} risk`}
       controls={
         <>
-          <Slider label="Loan amount" value={v.amount} min={SPECS.amount.min} max={SPECS.amount.max} step={10000} onChange={(x) => set("amount", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} loan`} />
+          <Slider label="Loan amount" value={v.amount} min={SPECS.amount.min} max={10000000} inputMax={SPECS.amount.max} step={10000} onChange={(x) => set("amount", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} loan`} />
           <Slider label="Interest rate" value={v.rate} min={SPECS.rate.min} max={SPECS.rate.max} step={0.25} onChange={(x) => set("rate", x)} formatValue={(x) => formatPercent(x)} valueText={(x) => `${formatPercent(x)} per year`} unit="p.a." />
           <Slider label="Tenure" value={v.months} min={SPECS.months.min} max={SPECS.months.max} step={6} onChange={(x) => set("months", x)} formatValue={(x) => `${x} mo`} valueText={(x) => `${x} months`} />
-          <Slider label="Monthly income" value={v.income} min={SPECS.income.min} max={SPECS.income.max} step={5000} onChange={(x) => set("income", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} income`} />
-          <Slider label="Monthly expenses" value={v.expenses} min={SPECS.expenses.min} max={SPECS.expenses.max} step={2000} onChange={(x) => set("expenses", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} expenses`} />
-          <Slider label="Existing EMIs" value={v.existing} min={SPECS.existing.min} max={SPECS.existing.max} step={1000} onChange={(x) => set("existing", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} existing EMIs`} />
+          <Slider label="Monthly income" value={v.income} min={SPECS.income.min} max={1000000} inputMax={SPECS.income.max} step={5000} onChange={(x) => set("income", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} income`} />
+          <Slider label="Monthly expenses" value={v.expenses} min={SPECS.expenses.min} max={1000000} inputMax={SPECS.expenses.max} step={2000} onChange={(x) => set("expenses", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} expenses`} />
+          <Slider label="Existing EMIs" value={v.existing} min={SPECS.existing.min} max={500000} inputMax={SPECS.existing.max} step={1000} onChange={(x) => set("existing", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} existing EMIs`} />
           <Slider label="Credit score" value={v.score} min={SPECS.score.min} max={SPECS.score.max} step={10} onChange={(x) => set("score", x)} formatValue={(x) => String(x)} valueText={(x) => `credit score ${x}`} />
           <Field label="Employment type">
             {(props) => (
@@ -110,6 +112,8 @@ function LoanSimulator() {
         </>
       }
     >
+      <TermStrip ids={["emi", "foir", "tenure", "principal", "amortization"]} />
+
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard label="Monthly EMI" value={emiR} format={(x) => formatMoney(x)} gold />
         <StatCard label="Total interest" value={paiseToRupees(result.totalInterestPaise)} format={(x) => formatMoney(x)} delta={{ text: `${result.interestRatioPct.toFixed(0)}% of loan`, tone: "neutral" }} />

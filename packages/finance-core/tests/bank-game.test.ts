@@ -139,6 +139,73 @@ describe("game lifecycle", () => {
   });
 });
 
+describe("round outcomes — the explanation layer", () => {
+  it("emits one outcome per applicant, in dealing order, each with a why", () => {
+    let g = initBankGame(21);
+    const board = g.currentApplicants;
+    g = resolveRound(g, board.map((a, i) => ({ applicantId: a.id, approve: i % 2 === 0, ratePct: 12 })));
+    const outcomes = g.history[0]!.outcomes;
+    expect(outcomes).toHaveLength(board.length);
+    expect(outcomes.map((o) => o.applicant.id)).toEqual(board.map((a) => a.id));
+    for (const o of outcomes) {
+      expect(o.why.length).toBeGreaterThan(20);
+      if (o.decision === "rejected") {
+        expect(o.outcome).toBe("rejected");
+        expect(o.profitPaise).toBe(0);
+        expect(o.ratePct).toBeUndefined();
+      } else {
+        expect(["repaid", "defaulted"]).toContain(o.outcome);
+        expect(o.ratePct).toBe(12);
+      }
+    }
+  });
+
+  it("outcome profits sum exactly to the round profit", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 100000 }), (seed) => {
+        let g = initBankGame(seed);
+        for (let r = 0; r < 3 && g.status === "active"; r++) {
+          g = resolveRound(g, g.currentApplicants.map((a, i) => ({ applicantId: a.id, approve: i % 3 !== 0, ratePct: 14 })));
+          const round = g.history[g.history.length - 1]!;
+          const sum = round.outcomes.reduce((s, o) => s + o.profitPaise, 0);
+          expect(sum).toBe(round.profitPaise);
+        }
+      }),
+    );
+  });
+
+  it("defaulted outcomes lose money and explain the warning signs", () => {
+    // Approve everyone at a thin rate across many seeds until defaults appear.
+    let found = false;
+    for (let seed = 1; seed < 40 && !found; seed++) {
+      let g = initBankGame(seed);
+      g = resolveRound(g, g.currentApplicants.map((a) => ({ applicantId: a.id, approve: true, ratePct: 9 })));
+      for (const o of g.history[0]!.outcomes) {
+        if (o.outcome === "defaulted") {
+          found = true;
+          expect(o.profitPaise).toBeLessThan(0);
+          expect(o.why).toMatch(/Defaulted/);
+        }
+      }
+    }
+    expect(found).toBe(true);
+  });
+
+  it("rejecting a safe borrower is explained as a missed opportunity", () => {
+    let found = false;
+    for (let seed = 1; seed < 40 && !found; seed++) {
+      let g = initBankGame(seed);
+      const safe = g.currentApplicants.find((a) => a.defaultProb < 0.15);
+      if (!safe) continue;
+      g = resolveRound(g, g.currentApplicants.map((a) => ({ applicantId: a.id, approve: false })));
+      const o = g.history[0]!.outcomes.find((x) => x.applicant.id === safe.id)!;
+      expect(o.why).toMatch(/safe borrower/);
+      found = true;
+    }
+    expect(found).toBe(true);
+  });
+});
+
 describe("determinism of resolution", () => {
   it("same seed + same decisions → identical end state (replay)", () => {
     const play = () => {

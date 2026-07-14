@@ -2,10 +2,12 @@
 
 import {
   initBankGame,
+  monthlyEmiPaise,
   paiseToRupees,
   resolveRound,
   TOTAL_ROUNDS,
   type Applicant,
+  type ApplicantOutcome,
   type BankGameState,
   type Decision,
 } from "@banksim/finance-core";
@@ -14,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SelectInput } from "@/components/ui/select";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoneyCompact } from "@/lib/format";
 import { useLocalState } from "@/lib/use-local-state";
 import { useState } from "react";
@@ -75,6 +78,11 @@ export default function BankGamePage() {
         <Badge variant="brand">simulation</Badge>
       </div>
 
+      <TermStrip
+        ids={["npa", "foir", "credit-score", "principal"]}
+        className="mb-4"
+      />
+
       <ScoreBoard game={game} />
 
       <div className="my-6 flex items-center justify-between">
@@ -110,8 +118,15 @@ export default function BankGamePage() {
 
       {game.history.length > 0 && (
         <Card className="mt-6">
-          <h3 className="mb-2 text-sm font-semibold">Last round</h3>
-          <p className="text-sm text-ink-2">{game.history[game.history.length - 1]!.note}</p>
+          <h3 className="mb-2 text-sm font-semibold">
+            What happened last round — and why
+          </h3>
+          <p className="mb-3 text-sm text-ink-2">
+            {game.history[game.history.length - 1]!.note}
+          </p>
+          <OutcomeList
+            outcomes={game.history[game.history.length - 1]!.outcomes ?? []}
+          />
         </Card>
       )}
 
@@ -126,6 +141,65 @@ export default function BankGamePage() {
         </ExplainerPanel>
       </div>
     </main>
+  );
+}
+
+const OUTCOME_ICON: Record<ApplicantOutcome["outcome"], string> = {
+  repaid: "✓",
+  defaulted: "✗",
+  rejected: "—",
+};
+
+/** Per-applicant results with the plain-language why (the teaching layer). */
+function OutcomeList({ outcomes }: { outcomes: ApplicantOutcome[] }) {
+  if (outcomes.length === 0) {
+    return (
+      <p className="text-sm text-ink-3">
+        (Detailed explanations start from your next round — this save predates
+        them.)
+      </p>
+    );
+  }
+  return (
+    <ol className="flex flex-col divide-y divide-line/60">
+      {outcomes.map((o) => (
+        <li key={o.applicant.id} className="flex items-start gap-3 py-2 text-sm">
+          <span
+            aria-hidden="true"
+            className={
+              "mt-0.5 font-semibold " +
+              (o.outcome === "repaid"
+                ? "text-status-good"
+                : o.outcome === "defaulted"
+                  ? "text-danger"
+                  : "text-ink-3")
+            }
+          >
+            {OUTCOME_ICON[o.outcome]}
+          </span>
+          <span className="flex-1">
+            <span className="font-medium">
+              {o.applicant.name}
+              {o.decision === "approved" && o.ratePct !== undefined && (
+                <span className="font-normal text-ink-3"> · approved @ {o.ratePct}%</span>
+              )}
+            </span>{" "}
+            <span className="text-ink-2">{o.why}</span>
+          </span>
+          {o.profitPaise !== 0 && (
+            <span
+              className={
+                "whitespace-nowrap tabular-nums " +
+                (o.profitPaise > 0 ? "text-status-good" : "text-danger")
+              }
+            >
+              {o.profitPaise > 0 ? "+" : ""}
+              {formatMoneyCompact(paiseToRupees(o.profitPaise))}
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -187,6 +261,11 @@ function ApplicantCard({
   const approved = decision?.approve ?? false;
   const rejected = decision !== undefined && !decision.approve;
 
+  // Affordability hint: what would this loan cost them at the offered rate?
+  const hintRate = decision?.ratePct ?? 12;
+  const emi = monthlyEmiPaise(applicant.amountPaise, hintRate, applicant.months);
+  const foirPct = (emi / applicant.monthlyIncomePaise) * 100;
+
   return (
     <Card className={"flex flex-col gap-3 " + (approved ? "ring-2 ring-brand" : rejected ? "opacity-60" : "")}>
       <div className="flex items-start justify-between">
@@ -209,6 +288,15 @@ function ApplicantCard({
         <dd className="text-right tabular-nums">{applicant.months} mo</dd>
       </dl>
       <p className="text-sm text-ink-2">&ldquo;{applicant.history}&rdquo;</p>
+
+      <p className="text-xs text-ink-3">
+        EMI at {hintRate}%: ≈{" "}
+        <span className="tabular-nums">{formatMoneyCompact(paiseToRupees(emi))}/mo</span>{" "}
+        —{" "}
+        <span className={foirPct > 50 ? "font-medium text-danger" : foirPct > 35 ? "text-status-warning" : "text-status-good"}>
+          {Math.round(foirPct)}% of their income
+        </span>
+      </p>
 
       <div className="mt-auto flex items-center gap-2">
         {approved ? (
@@ -237,6 +325,19 @@ function GameOver({ game, onRestart }: { game: BankGameState; onRestart: () => v
   const won = game.status === "won";
   const grade = won ? gradeFor(game) : null;
 
+  // The moments that decided the game: biggest losses and the biggest win.
+  const allOutcomes = game.history.flatMap((r) =>
+    (r.outcomes ?? []).map((o) => ({ ...o, round: r.round })),
+  );
+  const worst = allOutcomes
+    .filter((o) => o.profitPaise < 0)
+    .sort((a, b) => a.profitPaise - b.profitPaise)
+    .slice(0, 3);
+  const best = allOutcomes
+    .filter((o) => o.profitPaise > 0)
+    .sort((a, b) => b.profitPaise - a.profitPaise)
+    .slice(0, 1);
+
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-12 max-sm:px-4">
       <Card className="flex flex-col items-center gap-4 text-center">
@@ -255,8 +356,38 @@ function GameOver({ game, onRestart }: { game: BankGameState; onRestart: () => v
           </p>
         )}
 
+        {(worst.length > 0 || best.length > 0) && (
+          <div className="w-full text-left">
+            <h2 className="mb-2 text-lg font-semibold">The moments that decided it</h2>
+            <ul className="flex flex-col gap-2 text-sm">
+              {worst.map((o) => (
+                <li key={`w-${o.round}-${o.applicant.id}`} className="rounded-field border border-danger/30 bg-danger/5 px-3 py-2">
+                  <span className="font-medium">
+                    R{o.round}: {o.applicant.name}{" "}
+                    <span className="tabular-nums text-danger">
+                      {formatMoneyCompact(paiseToRupees(o.profitPaise))}
+                    </span>
+                  </span>{" "}
+                  <span className="text-ink-2">{o.why}</span>
+                </li>
+              ))}
+              {best.map((o) => (
+                <li key={`b-${o.round}-${o.applicant.id}`} className="rounded-field border border-status-good/30 bg-status-good/5 px-3 py-2">
+                  <span className="font-medium">
+                    R{o.round}: {o.applicant.name}{" "}
+                    <span className="tabular-nums text-status-good">
+                      +{formatMoneyCompact(paiseToRupees(o.profitPaise))}
+                    </span>
+                  </span>{" "}
+                  <span className="text-ink-2">Your best call of the game — {o.why}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="w-full text-left">
-          <h2 className="mb-2 text-lg font-semibold">Post-mortem</h2>
+          <h2 className="mb-2 text-lg font-semibold">Round by round</h2>
           <ol className="flex flex-col gap-1.5 text-sm">
             {game.history.map((r) => (
               <li key={r.round} className="flex items-start justify-between gap-3 border-b border-line/60 py-1.5 last:border-0">

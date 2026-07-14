@@ -16,13 +16,15 @@ import { SelectInput } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { StatCard } from "@/components/ui/stat-card";
 import { Tabs } from "@/components/ui/tabs";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { parseParams, useUrlSync, type ParamSpec } from "@/lib/url-state";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
 const SPECS = {
-  principal: { kind: "int", def: 10000, min: 100, max: 10_00_000 },
+  // max = realistic typed cap; the slider drags a comfortable sub-range.
+  principal: { kind: "int", def: 10000, min: 100, max: 10_00_00_000 },
   rate: { kind: "float", def: 8, min: 0, max: 15 },
   years: { kind: "int", def: 10, min: 1, max: 40 },
   comp: {
@@ -79,7 +81,8 @@ function CompoundVisualizer() {
             label="Deposit (one time)"
             value={v.principal}
             min={SPECS.principal.min}
-            max={SPECS.principal.max}
+            max={10_00_000}
+            inputMax={SPECS.principal.max}
             step={1000}
             onChange={(x) => set("principal", x)}
             formatValue={(x) => formatMoney(x)}
@@ -119,6 +122,8 @@ function CompoundVisualizer() {
         </>
       }
     >
+      <TermStrip ids={["compound-interest", "rule-of-72", "principal"]} />
+
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard
           label="With compound interest"

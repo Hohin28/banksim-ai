@@ -19,14 +19,17 @@ import { SelectInput } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { StatCard } from "@/components/ui/stat-card";
 import { Tabs } from "@/components/ui/tabs";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { parseParams, useUrlSync, type ParamSpec } from "@/lib/url-state";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
 const SPECS = {
-  init: { kind: "int", def: 10000, min: 0, max: 10_00_000 },
-  monthly: { kind: "int", def: 5000, min: 0, max: 1_00_000 },
+  // max = realistic typed-amount cap; sliders drag over a comfortable
+  // sub-range (see SLIDER_MAX) and the paired input accepts up to max.
+  init: { kind: "int", def: 10000, min: 0, max: 10_00_00_000 },
+  monthly: { kind: "int", def: 5000, min: 0, max: 10_00_000 },
   rate: { kind: "float", def: 7, min: 0, max: 15 },
   years: { kind: "int", def: 10, min: 1, max: 40 },
   comp: {
@@ -119,7 +122,8 @@ function SavingsSimulator() {
             label="Initial deposit"
             value={v.init}
             min={SPECS.init.min}
-            max={SPECS.init.max}
+            max={10_00_000}
+            inputMax={SPECS.init.max}
             step={1000}
             onChange={(x) => set("init", x)}
             formatValue={(x) => formatMoney(x)}
@@ -129,7 +133,8 @@ function SavingsSimulator() {
             label="Monthly deposit"
             value={v.monthly}
             min={SPECS.monthly.min}
-            max={SPECS.monthly.max}
+            max={1_00_000}
+            inputMax={SPECS.monthly.max}
             step={500}
             onChange={(x) => set("monthly", x)}
             formatValue={(x) => formatMoney(x)}
@@ -183,6 +188,8 @@ function SavingsSimulator() {
         </>
       }
     >
+      <TermStrip ids={["compound-interest", "inflation", "real-value", "principal"]} />
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Final amount"

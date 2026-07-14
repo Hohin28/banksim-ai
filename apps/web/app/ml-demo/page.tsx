@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { SelectInput } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { TermStrip } from "@/components/ui/term";
 import { ApiError, apiFetch } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { useEffect, useState } from "react";
@@ -160,6 +161,8 @@ export default function MlDemoPage() {
           judge — and sometimes disagree with each other.
         </p>
       </header>
+
+      <TermStrip ids={["credit-score", "roc-auc", "emi"]} className="mb-6" />
 
       {apiDown ? (
         <Card className="flex flex-col gap-3">

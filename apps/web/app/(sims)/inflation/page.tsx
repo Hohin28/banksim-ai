@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { StatCard } from "@/components/ui/stat-card";
 import { Tabs } from "@/components/ui/tabs";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { parseParams, useUrlSync, type ParamSpec } from "@/lib/url-state";
 import Link from "next/link";
@@ -22,7 +23,8 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
 const SPECS = {
-  amount: { kind: "int", def: 1000, min: 100, max: 10_00_000 },
+  // max = realistic typed cap; the slider drags a comfortable sub-range.
+  amount: { kind: "int", def: 1000, min: 100, max: 10_00_00_000 },
   infl: { kind: "float", def: 6, min: 0, max: 15 },
   years: { kind: "int", def: 20, min: 5, max: 40 },
 } satisfies Record<string, ParamSpec>;
@@ -63,7 +65,8 @@ function InflationSimulator() {
             label="Amount today"
             value={v.amount}
             min={SPECS.amount.min}
-            max={SPECS.amount.max}
+            max={10_00_000}
+            inputMax={SPECS.amount.max}
             step={100}
             onChange={(x) => set("amount", x)}
             formatValue={(x) => formatMoney(x)}
@@ -93,6 +96,8 @@ function InflationSimulator() {
         </>
       }
     >
+      <TermStrip ids={["inflation", "real-value"]} />
+
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard
           label={`What ${formatMoney(v.amount)} will buy in ${v.years}y`}

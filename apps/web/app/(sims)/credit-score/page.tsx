@@ -18,6 +18,7 @@ import { SimulatorShell } from "@/components/simulator/shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { TermStrip } from "@/components/ui/term";
 import { useLocalState } from "@/lib/use-local-state";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -143,6 +144,8 @@ export default function CreditScorePage() {
         </>
       }
     >
+      <TermStrip ids={["credit-score", "utilisation", "emi"]} />
+
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Card className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-2">

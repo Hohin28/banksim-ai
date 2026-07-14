@@ -17,6 +17,12 @@ export interface SliderProps {
   valueText?: (v: number) => string;
   /** Unit hint rendered beside the paired input, e.g. "%", "yrs". */
   unit?: string;
+  /**
+   * Realistic hard cap for TYPED values. The drag range stays min–max for
+   * comfortable precision, but the paired input accepts up to this amount
+   * (e.g. slider to ₹10L, type up to ₹10Cr). Defaults to `max`.
+   */
+  inputMax?: number;
   disabled?: boolean;
   className?: string;
 }
@@ -40,6 +46,7 @@ export function Slider({
   formatValue = (v) => String(v),
   valueText,
   unit,
+  inputMax,
   disabled,
   className,
 }: SliderProps) {
@@ -47,12 +54,17 @@ export function Slider({
   // Draft state so the paired input can hold partial text while typing.
   const [draft, setDraft] = useState<string | null>(null);
 
-  const pct = max === min ? 0 : ((value - min) / (max - min)) * 100;
+  // Typed values may exceed the drag range, up to the realistic hard cap.
+  const hardMax = Math.max(inputMax ?? max, max);
+  const pct =
+    max === min
+      ? 0
+      : Math.min(100, ((Math.min(value, max) - min) / (max - min)) * 100);
 
   const commitDraft = () => {
     if (draft === null) return;
     const parsed = Number(draft.replace(/[^\d.-]/g, ""));
-    if (!Number.isNaN(parsed)) onChange(clamp(parsed, min, max));
+    if (!Number.isNaN(parsed)) onChange(clamp(parsed, min, hardMax));
     setDraft(null);
   };
 
@@ -85,7 +97,9 @@ export function Slider({
     }
     if (next !== null) {
       e.preventDefault();
-      onChange(clamp(next, min, max));
+      // Arrows step within the drag range; if the user typed above it, the
+      // first press walks the value back down toward the range.
+      onChange(clamp(next, min, Math.max(max, Math.min(value, hardMax))));
     }
   };
 
@@ -106,6 +120,11 @@ export function Slider({
               "focus-visible:border-brand",
             )}
             value={draft ?? formatValue(value)}
+            title={
+              hardMax > max
+                ? `Type any amount up to ${formatValue(hardMax)}`
+                : undefined
+            }
             onFocus={() => setDraft(String(value))}
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commitDraft}
@@ -127,7 +146,7 @@ export function Slider({
           type="range"
           className="bs-range"
           style={{ "--fill": `${pct}%` } as React.CSSProperties}
-          value={value}
+          value={Math.min(value, max)}
           min={min}
           max={max}
           step={step}
@@ -140,7 +159,14 @@ export function Slider({
 
       <div className="flex justify-between text-xs text-ink-3 tabular-nums">
         <span aria-hidden="true">{formatValue(min)}</span>
-        <span aria-hidden="true">{formatValue(max)}</span>
+        <span aria-hidden="true">
+          {formatValue(max)}
+          {hardMax > max && (
+            <span title={`Type any amount up to ${formatValue(hardMax)}`}>
+              + <span className="text-[10px]">(type more)</span>
+            </span>
+          )}
+        </span>
       </div>
     </div>
   );

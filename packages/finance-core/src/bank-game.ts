@@ -70,6 +70,19 @@ export interface BankGameState {
   history: RoundResult[];
 }
 
+/** Per-applicant explanation of what happened and WHY (the teaching layer). */
+export interface ApplicantOutcome {
+  applicant: Applicant;
+  decision: "approved" | "rejected";
+  outcome: "repaid" | "defaulted" | "rejected";
+  /** Rate offered when approved. */
+  ratePct?: number;
+  /** Signed effect on the round's profit; 0 for rejections. */
+  profitPaise: Paise;
+  /** Plain-language explanation of the result. */
+  why: string;
+}
+
 export interface RoundResult {
   round: number;
   approved: number;
@@ -77,6 +90,8 @@ export interface RoundResult {
   defaults: number;
   profitPaise: Paise;
   note: string;
+  /** One entry per applicant dealt this round, in dealing order. */
+  outcomes: ApplicantOutcome[];
 }
 
 export const TOTAL_ROUNDS = 12;
@@ -202,6 +217,7 @@ export function resolveRound(
   let goodRejected = 0;
   let approvedActivePaise = 0;
   let defaultedPaise = 0;
+  const outcomes: ApplicantOutcome[] = [];
 
   for (const applicant of state.currentApplicants) {
     const decision = decisionMap.get(applicant.id);
@@ -209,6 +225,13 @@ export function resolveRound(
     if (!approve) {
       rejected++;
       if (applicant.defaultProb < 0.15) goodRejected++;
+      outcomes.push({
+        applicant,
+        decision: "rejected",
+        outcome: "rejected",
+        profitPaise: 0,
+        why: rejectionWhy(applicant),
+      });
       continue;
     }
     approved++;
@@ -224,9 +247,29 @@ export function resolveRound(
       const loss = Math.round(applicant.amountPaise * 0.5) + Math.round(fundingCost);
       roundProfit -= loss;
       defaultedPaise += applicant.amountPaise;
+      outcomes.push({
+        applicant,
+        decision: "approved",
+        outcome: "defaulted",
+        ratePct,
+        profitPaise: -loss,
+        why: defaultWhy(applicant, emi),
+      });
     } else {
-      roundProfit += Math.round(totalInterest - fundingCost);
+      const gain = Math.round(totalInterest - fundingCost);
+      roundProfit += gain;
       approvedActivePaise += applicant.amountPaise;
+      outcomes.push({
+        applicant,
+        decision: "approved",
+        outcome: "repaid",
+        ratePct,
+        profitPaise: gain,
+        why:
+          `Repaid all ${applicant.months} EMIs at ${ratePct}% — after paying ` +
+          `${COST_OF_FUNDS_PCT}% for the deposits that funded the loan, the ` +
+          `interest margin became your profit.`,
+      });
     }
   }
 
@@ -258,6 +301,7 @@ export function resolveRound(
     defaults,
     profitPaise: roundProfit,
     note,
+    outcomes,
   };
 
   const history = [...state.history, result];
@@ -280,6 +324,57 @@ export function resolveRound(
     currentApplicants: status === "active" ? dealApplicants(nextRng, nextRound) : [],
     history,
   };
+}
+
+/** The visible warning signs that made a defaulted applicant risky. */
+function defaultWhy(applicant: Applicant, emiPaise: Paise): string {
+  const signs: string[] = [];
+  if (applicant.creditScore < 620) {
+    signs.push(`a weak credit score of ${applicant.creditScore}`);
+  }
+  if (applicant.employment === "student") signs.push("student income");
+  if (applicant.employment === "self-employed") {
+    signs.push("less predictable self-employed income");
+  }
+  if (applicant.history.includes("default")) signs.push("a past default on record");
+  if (applicant.history.includes("late")) signs.push("previous late payments");
+  const foirPct = (emiPaise / applicant.monthlyIncomePaise) * 100;
+  if (foirPct > 45) {
+    signs.push(`an EMI eating ${Math.round(foirPct)}% of their income`);
+  }
+  if (signs.length === 0) {
+    return (
+      "Defaulted despite a decent profile — no model catches everything, " +
+      "which is exactly why banks price risk into every rate."
+    );
+  }
+  return `Defaulted. The warning signs were there: ${joinList(signs)}. You lost about half the principal.`;
+}
+
+/** Was rejecting this applicant a good call? Explain either way. */
+function rejectionWhy(applicant: Applicant): string {
+  if (applicant.defaultProb < 0.15) {
+    return (
+      `This was actually a safe borrower (score ${applicant.creditScore}, ` +
+      `${applicant.history}) — no loss, but they took their business to a ` +
+      `rival bank and satisfaction dipped.`
+    );
+  }
+  if (applicant.defaultProb >= 0.4) {
+    return (
+      `Good call — score ${applicant.creditScore} with "${applicant.history}" ` +
+      `made this a genuinely high default risk.`
+    );
+  }
+  return (
+    "A judgement call — this profile carried moderate risk. Reasonable " +
+    "bankers could disagree."
+  );
+}
+
+function joinList(items: string[]): string {
+  if (items.length === 1) return items[0]!;
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
 function buildNote(defaults: number, approved: number, goodRejected: number, profit: number): string {

@@ -80,3 +80,55 @@ describe("Slider", () => {
     expect(results.violations).toEqual([]);
   });
 });
+
+/** Harness with a realistic typed-amount cap above the drag range. */
+function CappedHarness() {
+  const [value, setValue] = useState(5000);
+  return (
+    <Slider
+      label="Initial deposit"
+      value={value}
+      min={0}
+      max={100000}
+      inputMax={10000000} // drag to ₹1L, type up to ₹1Cr
+      step={500}
+      onChange={setValue}
+      formatValue={(v) => formatMoney(v)}
+    />
+  );
+}
+
+describe("Slider with inputMax (typed amounts beyond the drag range)", () => {
+  it("accepts a typed value above the slider max, up to the hard cap", async () => {
+    const user = userEvent.setup();
+    render(<CappedHarness />);
+    const exact = screen.getByRole("textbox", { name: "Initial deposit (exact value)" });
+    await user.clear(exact);
+    await user.type(exact, "5000000{Enter}");
+    expect(exact).toHaveValue("₹50,00,000"); // NOT clamped to ₹1,00,000
+  });
+
+  it("still clamps typed values at the hard cap", async () => {
+    const user = userEvent.setup();
+    render(<CappedHarness />);
+    const exact = screen.getByRole("textbox", { name: "Initial deposit (exact value)" });
+    await user.clear(exact);
+    await user.type(exact, "999999999{Enter}");
+    expect(exact).toHaveValue("₹1,00,00,000"); // clamped to inputMax
+  });
+
+  it("shows the drag range clamped while the true value stays typed", async () => {
+    const user = userEvent.setup();
+    render(<CappedHarness />);
+    const exact = screen.getByRole("textbox", { name: "Initial deposit (exact value)" });
+    await user.clear(exact);
+    await user.type(exact, "5000000{Enter}");
+    // The range input visually pegs at its max; the source of truth is typed.
+    expect(screen.getByRole("slider", { name: "Initial deposit" })).toHaveValue("100000");
+  });
+
+  it("advertises the cap in the range captions", () => {
+    render(<CappedHarness />);
+    expect(screen.getByText(/type more/)).toBeInTheDocument();
+  });
+});

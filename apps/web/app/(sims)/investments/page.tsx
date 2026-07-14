@@ -12,14 +12,16 @@ import { SimulatorShell } from "@/components/simulator/shell";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { parseParams, useUrlSync, type ParamSpec } from "@/lib/url-state";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
 const SPECS = {
-  monthly: { kind: "int", def: 5000, min: 0, max: 100000 },
-  lump: { kind: "int", def: 0, min: 0, max: 10000000 },
+  // max = realistic typed cap; sliders drag a comfortable sub-range.
+  monthly: { kind: "int", def: 5000, min: 0, max: 1000000 },
+  lump: { kind: "int", def: 0, min: 0, max: 100000000 },
   years: { kind: "int", def: 15, min: 1, max: 40 },
   infl: { kind: "float", def: 6, min: 0, max: 12 },
 } satisfies Record<string, ParamSpec>;
@@ -98,8 +100,8 @@ function InvestmentComparison() {
       }
       controls={
         <>
-          <Slider label="Monthly investment (SIP)" value={v.monthly} min={SPECS.monthly.min} max={SPECS.monthly.max} step={500} onChange={(x) => set("monthly", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} per month`} />
-          <Slider label="One-time lump sum" value={v.lump} min={SPECS.lump.min} max={SPECS.lump.max} step={10000} onChange={(x) => set("lump", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} lump sum`} />
+          <Slider label="Monthly investment (SIP)" value={v.monthly} min={SPECS.monthly.min} max={100000} inputMax={SPECS.monthly.max} step={500} onChange={(x) => set("monthly", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} per month`} />
+          <Slider label="One-time lump sum" value={v.lump} min={SPECS.lump.min} max={10000000} inputMax={SPECS.lump.max} step={10000} onChange={(x) => set("lump", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} lump sum`} />
           <Slider label="Years" value={v.years} min={SPECS.years.min} max={SPECS.years.max} step={1} onChange={(x) => set("years", x)} formatValue={(x) => `${x} yrs`} valueText={(x) => `${x} years`} />
           <Slider label="Inflation" value={v.infl} min={SPECS.infl.min} max={SPECS.infl.max} step={0.5} onChange={(x) => set("infl", x)} formatValue={(x) => formatPercent(x)} valueText={(x) => `${formatPercent(x)} inflation`} unit="p.a." />
           <fieldset className="flex flex-col gap-2">
@@ -124,6 +126,7 @@ function InvestmentComparison() {
         </>
       }
     >
+      <TermStrip ids={["sip", "fd", "rd", "index-fund", "liquidity", "real-value"]} />
       {!valid ? (
         <Card>
           <p className="text-ink-2">Enter a monthly amount or a lump sum to compare instruments.</p>

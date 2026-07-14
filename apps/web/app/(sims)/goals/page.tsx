@@ -13,6 +13,7 @@ import { Field } from "@/components/ui/field";
 import { SelectInput } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { StatCard } from "@/components/ui/stat-card";
+import { TermStrip } from "@/components/ui/term";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { parseParams, useUrlSync, type ParamSpec } from "@/lib/url-state";
 import Link from "next/link";
@@ -29,7 +30,8 @@ const TEMPLATES = [
 ] as const;
 
 const SPECS = {
-  target: { kind: "int", def: 80000, min: 5000, max: 10000000 },
+  // max = realistic typed cap; the slider drags a comfortable sub-range.
+  target: { kind: "int", def: 80000, min: 5000, max: 100000000 },
   months: { kind: "int", def: 18, min: 3, max: 360 },
   ret: { kind: "float", def: 6, min: 0, max: 20 },
   infladj: { kind: "enum", def: "off", options: ["off", "on"] },
@@ -76,7 +78,7 @@ function GoalPlanner() {
       announcement={`Save ${formatMoney(monthlyR)} per month to reach ${formatMoney(v.target)} in ${v.months} months`}
       controls={
         <>
-          <Slider label="Target amount" value={v.target} min={SPECS.target.min} max={SPECS.target.max} step={5000} onChange={(x) => set("target", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} goal`} />
+          <Slider label="Target amount" value={v.target} min={SPECS.target.min} max={10000000} inputMax={SPECS.target.max} step={5000} onChange={(x) => set("target", x)} formatValue={(x) => formatMoney(x)} valueText={(x) => `${formatMoney(x)} goal`} />
           <Slider label="Time to goal" value={v.months} min={SPECS.months.min} max={SPECS.months.max} step={1} onChange={(x) => set("months", x)} formatValue={(x) => `${x} mo`} valueText={(x) => `${x} months`} />
           <Slider label="Expected return" value={v.ret} min={SPECS.ret.min} max={SPECS.ret.max} step={0.5} onChange={(x) => set("ret", x)} formatValue={(x) => formatPercent(x)} valueText={(x) => `${formatPercent(x)} return`} unit="p.a." />
           <Field label="Inflation-adjust the target?" help="Keeps the goal's real buying power.">
@@ -90,6 +92,8 @@ function GoalPlanner() {
         </>
       }
     >
+      <TermStrip ids={["sip", "compound-interest", "inflation"]} />
+
       <Card>
         <h2 className="mb-3 text-sm font-medium text-ink-2">Start from a common goal</h2>
         <div className="flex flex-wrap gap-2">
