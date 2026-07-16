@@ -191,6 +191,9 @@ function InvestmentComparison() {
               The <strong>real value</strong> column is the honest one: growth after {formatPercent(v.infl)} inflation. Anything with a ↓ is losing purchasing power despite looking positive.
             </p>
             <p>
+              <strong>The common mistake:</strong> reading &ldquo;12% average&rdquo; as &ldquo;12% every year&rdquo;. An average is not a schedule — a fund averaging 12% over 20 years might gain 30% one year and lose 20% the next. The average only shows up for people who stay invested through the bad years, which is exactly when most people sell.
+            </p>
+            <p>
               These are <strong>illustrative long-run averages</strong> for learning, not advice or live market data. Match the instrument to the goal: short horizons favour safety, long horizons can ride out volatility.
             </p>
           </ExplainerPanel>

@@ -235,6 +235,13 @@ function InflationSimulator() {
           quietly.
         </p>
         <p>
+          <strong>The common mistake:</strong> &ldquo;my salary raise matched
+          inflation, so I&rsquo;m fine.&rdquo; Education and healthcare
+          routinely inflate faster than the headline average — often 8–10%
+          while the general rate is 6%. A raise matching the average still
+          means falling behind on the things that matter most.
+        </p>
+        <p>
           Real inflation varies year to year (India&rsquo;s CPI has ranged
           roughly 2–12% over recent decades) — this simulator holds it
           constant to make the mechanism visible.

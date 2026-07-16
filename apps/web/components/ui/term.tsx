@@ -31,7 +31,21 @@ function TermDialog({
           <strong className="text-ink-1">Why it matters: </strong>
           {entry.why}
         </p>
-        <div className="mt-1 flex flex-col gap-2 border-t border-line pt-3">
+
+        {/* Primary action: the full in-app explainer. */}
+        <Link
+          href={`/learn/glossary/${id}`}
+          onClick={onClose}
+          className="mt-1 flex items-center justify-between gap-3 rounded-field bg-brand px-4 py-2.5 font-medium text-white transition-colors hover:bg-brand-strong"
+        >
+          Read the full explainer
+          <span aria-hidden="true">→</span>
+        </Link>
+        <p className="-mt-1 text-xs text-ink-3">
+          How it works, a worked example, and the mistake people make.
+        </p>
+
+        <div className="flex flex-col gap-2 border-t border-line pt-3">
           {entry.tryIt && (
             <Link
               href={entry.tryIt.href}

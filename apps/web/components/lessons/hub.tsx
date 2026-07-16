@@ -63,6 +63,22 @@ export function LearningHub() {
         })}
       </div>
 
+      <Link
+        href="/learn/glossary"
+        className="mt-6 flex items-center justify-between gap-4 rounded-panel border border-line bg-surface px-5 py-4 transition-colors hover:border-brand"
+      >
+        <span>
+          <span className="block font-display text-lg font-semibold">
+            📖 Glossary
+          </span>
+          <span className="text-sm text-ink-2">
+            Every term explained — how it works, a worked example, why it
+            matters, and the mistake people make.
+          </span>
+        </span>
+        <span aria-hidden="true" className="text-brand">→</span>
+      </Link>
+
       <section className="mt-10">
         <h2 className="mb-3 text-lg font-semibold text-ink-2">More lessons coming</h2>
         <div className="flex flex-wrap gap-2">

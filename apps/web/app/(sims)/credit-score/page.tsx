@@ -245,6 +245,9 @@ export default function CreditScorePage() {
           Notice how one missed EMI drops the score fast but heals slowly as months pass, while maxing a card hurts immediately and recovers the moment you pay it down. That asymmetry is the real lesson: <strong>payment history is hard to rebuild; utilisation is easy to fix.</strong>
         </p>
         <p>
+          <strong>The common mistake:</strong> &ldquo;I&rsquo;ve never taken a loan, so my score must be excellent.&rdquo; No history is not good history — a thin file gives lenders nothing to judge, which is why the &ldquo;new to credit&rdquo; profile above starts in the mid-600s, not at 900. You build a score by using credit responsibly, not by avoiding it.
+        </p>
+        <p>
           These weights mirror how bureaus broadly work, but the exact model here is a teaching simplification — not any bureau&rsquo;s real algorithm.
         </p>
       </ExplainerPanel>

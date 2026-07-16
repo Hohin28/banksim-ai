@@ -253,6 +253,14 @@ function LoanSimulator() {
           <strong>{formatMoney(paiseToRupees(result.totalInterestPaise))}</strong> is the price of borrowing.
         </p>
         <p>
+          <strong>The common mistake:</strong> judging a loan by its EMI. A
+          smaller EMI almost always means a longer tenure — the same ₹10 lakh
+          at 10% costs about ₹3.9 lakh in interest over 7 years, but over ₹13
+          lakh across 20 years. The monthly number is what lenders advertise;
+          total interest is the one that bites. Drag the tenure slider above
+          and watch both move in opposite directions.
+        </p>
+        <p>
           The approval estimate is a simplified, transparent heuristic for learning — real lenders use private models and far more data.
         </p>
       </ExplainerPanel>

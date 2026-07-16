@@ -168,6 +168,9 @@ function GoalPlanner() {
         <p>
           A higher expected return means a smaller monthly saving — but higher-return instruments carry more risk, which matters more the sooner you need the money.
         </p>
+        <p>
+          <strong>The common mistake:</strong> setting an ambitious return to make the monthly number look comfortable. Assuming 14% instead of 7% halves the amount you seem to need — but if the market disagrees in the year your goal is due, the shortfall is real and the deadline doesn&rsquo;t move. For goals under two years, plan with a rate you can actually guarantee.
+        </p>
       </ExplainerPanel>
     </SimulatorShell>
   );

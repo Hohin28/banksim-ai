@@ -15,12 +15,18 @@ describe("Term", () => {
     expect(screen.getByText(/Why it matters:/)).toBeInTheDocument();
   });
 
-  it("links to the live simulator and to a Google search", async () => {
+  it("links to the full explainer, the live simulator, and a Google search", async () => {
     const user = userEvent.setup();
     render(<Term id="emi" />);
     await user.click(screen.getByRole("button", { name: "EMI" }));
+    // Primary action is now the in-app explainer page.
+    expect(screen.getByRole("link", { name: /Read the full explainer/i })).toHaveAttribute(
+      "href",
+      "/learn/glossary/emi",
+    );
+    // "See it live" now carries the worked example's numbers into the sim.
     const tryIt = screen.getByRole("link", { name: /Loan Simulator/i });
-    expect(tryIt).toHaveAttribute("href", "/loans");
+    expect(tryIt).toHaveAttribute("href", expect.stringContaining("/loans?"));
     const google = screen.getByRole("link", { name: /Read more on Google/i });
     expect(google).toHaveAttribute(
       "href",

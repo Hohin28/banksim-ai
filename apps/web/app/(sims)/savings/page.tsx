@@ -309,6 +309,14 @@ function SavingsSimulator() {
           </p>
         )}
         <p>
+          <strong>The common mistake:</strong> assuming compounding
+          &ldquo;kicks in later&rdquo;, so starting late costs little. It&rsquo;s
+          the reverse — the late years are only large because the early years
+          happened. Delaying five years doesn&rsquo;t remove five average
+          years; it removes the five most powerful ones at the far end of the
+          curve.
+        </p>
+        <p>
           Banks vary in how they credit interest — this simulator uses the
           standard nominal-rate formula with your chosen compounding
           frequency.

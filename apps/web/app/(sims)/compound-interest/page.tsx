@@ -246,8 +246,11 @@ function CompoundVisualizer() {
           did nothing for.
         </p>
         <p>
-          Compounding more often (monthly vs yearly) helps, but only a little
-          — time and rate matter far more than frequency.
+          <strong>The common mistake:</strong> chasing compounding
+          <em> frequency</em>. Monthly vs yearly compounding is worth a rounding
+          error next to time and rate — people hunt for a monthly-compounding
+          account while ignoring that a 2% better rate, or five more years,
+          would dwarf the difference.
         </p>
       </ExplainerPanel>
     </SimulatorShell>
