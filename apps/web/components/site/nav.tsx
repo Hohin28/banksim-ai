@@ -10,6 +10,7 @@ const LINKS: { href: string; label: string; soon?: boolean }[] = [
   { href: "/loans", label: "Loans" },
   { href: "/credit-score", label: "Credit" },
   { href: "/bank-game", label: "Bank Game" },
+  { href: "/scenarios", label: "Scenarios" },
   { href: "/investments", label: "Investments" },
   { href: "/goals", label: "Goals" },
   { href: "/compound-interest", label: "Compound" },

@@ -55,6 +55,18 @@ const EXPLORE: {
     desc: "Approve loans, balance profit against risk.",
     href: "/bank-game",
   },
+  {
+    emoji: "🪤",
+    title: "Spot the trap",
+    desc: "Three loan offers, one predatory. Can you tell?",
+    href: "/scenarios/predatory-loan",
+  },
+  {
+    emoji: "💸",
+    title: "Budget a paycheck",
+    desc: "Split a salary, then survive a surprise expense.",
+    href: "/scenarios/budget-paycheck",
+  },
 ];
 
 export default function Home() {

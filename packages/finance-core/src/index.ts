@@ -10,7 +10,7 @@
  * Modules land per the roadmap: savings/compound/inflation (M1),
  * loan/investments/goals (M2), credit-score & bank-game engines (M4).
  */
-export const FINANCE_CORE_VERSION = "0.5.0";
+export const FINANCE_CORE_VERSION = "0.6.0";
 
 export * from "./money";
 export * from "./rates";
@@ -22,3 +22,5 @@ export * from "./goals";
 export * from "./investments";
 export * from "./credit-score";
 export * from "./bank-game";
+export * from "./loan-offers";
+export * from "./budget";
