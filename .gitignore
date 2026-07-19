@@ -15,6 +15,11 @@ coverage/
 playwright-report/
 test-results/
 
+# Task runner / tooling caches
+.turbo/
+*.tmp
+tmp/
+
 # Python (from M3 onward)
 __pycache__/
 *.py[cod]
